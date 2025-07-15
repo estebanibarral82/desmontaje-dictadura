@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desmontando la Dictadura</title>
+  <!-- Importar tipografías -->
+  <link href="https://fonts.googleapis.com/css2?family=Special+Gothic+Condensed+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #090706;
+      --color-text: #fff;
+      --color-accent: #E95040;
+      --color-verdad-bg: #090706;
+      --transition: 0.3s;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container { width: 100%; max-width: 800px; }
+    header {
+      width: 100%;
+      background: var(--color-bg);
+      text-align: center;
+      padding-bottom: 1rem;
+    }
+    .header-img { width: 100%; height: auto; max-height: 250px; object-fit: contain; display: block; }
+    .intro-text {
+      font-family: 'Chivo Mono', monospace;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #ccc;
+      text-align: center;
+      margin: 1rem auto;
+      max-width: 700px;
+      padding: 0 1rem;
+    }
+    .toggle-container { margin: 1rem 0; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+    .label {
+      font-size: 1.125rem;
+      cursor: pointer;
+      color: #777;
+      font-family: 'Special Gothic Condensed One', sans-serif;
+      text-transform: uppercase;
+      transition: var(--transition);
+    }
+    .label.active { font-weight: bold; }
+    #labelMontaje.active { color: var(--color-accent); }
+    #labelVerdad.active { color: var(--color-text); }
+    .switch { position: relative; width: 60px; height: 30px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0;
+      background-color: var(--color-accent);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .slider::before {
+      content: "";
+      position: absolute;
+      height: 24px; width: 24px;
+      left: 3px; bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+    input:checked + .slider { background: var(--color-text); }
+    input:checked + .slider::before { transform: translateX(30px); background: var(--color-bg); }
+    #videos {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem 0;
+      position: relative;
+    }
+    /* Background overlay for videos section */
+    #videos::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      height: 100%;
+      background-image: url('https://i.ibb.co/8Dh7vBTg/ratones.jpg');
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      filter: grayscale(100%) blur(2px) opacity(0.2);
+      z-index: -1;
+    }
+    .video-card {
+      background: #222;
+      border-radius: 8px;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem;
+    }
+    .thumbnail { flex: 0 0 200px; cursor: pointer; }
+    .thumbnail img { width: 100%; border-radius: 4px; }
+    .video-info { flex: 1; display: flex; flex-direction: column; }
+    .video-info h3 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-family: 'Special Gothic Condensed One', sans-serif;
+      text-transform: uppercase;
+    }
+    .video-info .meta {
+      margin: 0.25rem 0 0.75rem;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #fff;
+      font-family: 'Chivo Mono', monospace;
+    }
+    .video-info p {
+      margin: 0 0 1rem;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: #ccc;
+      font-family: 'Chivo Mono', monospace;
+    }
+    .view-btn {
+      position: relative;
+      align-self: flex-start;
+      padding: 0.5rem 1rem;
+      background: transparent;
+      color: currentColor;
+      border: 2px solid;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Special Gothic Condensed One', sans-serif;
+      text-transform: uppercase;
+    }
+    .view-btn::before { content: "▶"; margin-right: 0.5rem; }
+    .view-btn.montaje { color: var(--color-accent); border-color: var(--color-accent); }
+    .view-btn.verdad  { color: #fff; border-color: #fff; }
+    .view-btn.montaje:hover, .view-btn.montaje:active { background: var(--color-accent); color: #fff; }
+    .view-btn.verdad:hover, .view-btn.verdad:active { background: #fff; color: #000; }
+    /* Lightbox Styles */
+    #lightbox {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #lightbox-content { position: relative; width: 90%; max-width: 800px; }
+    #lightbox-frame { width: 100%; height: 450px; border: none; border-radius: 4px; }
+    #lightbox-close {
+      position: absolute; top: -10px; right: -10px;
+      background: var(--color-accent); color: #fff;
+      width: 30px; height: 30px;
+      border-radius: 50%; font-size: 1.5rem;
+      line-height: 30px; text-align: center;
+      cursor: pointer;
+    }
+    /* Footer */
+    .site-footer { width: 100%; text-align: center; font-family: 'Roboto', sans-serif; color: #aaa; font-size: 0.85rem; margin: 2rem auto 1rem; }
+    .site-footer hr { width: 60%; margin: 0.5rem auto 1rem; border-top: 1px solid rgba(255,255,255,0.5); }
+    .site-footer a { color: var(--color-accent); text-decoration: none; font-weight: bold; }
+    /* Responsive */
+    @media (max-width: 600px) {
+      .video-card { flex-direction: column; align-items: center; }
+      .thumbnail { width: 100%; }
+      .video-info h3 { font-size: 1.2rem; text-align: center; }
+      .video-info .meta { text-align: center; }
+      .view-btn { margin: 0 auto; }
+      .toggle-container { flex-direction: row; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img id="headerImg" class="header-img" src="https://i.ibb.co/chVY2JCD/montaje1.png" alt="Montaje Header">
+      <p class="intro-text">Donde las mentiras pierden su disfraz y la historia recupera su voz. Navega este archivo vivo: cada noticia manipulada junto a la verdad que la desarma. Descubre, contrasta, comparte. Porque una ciudadanía despierta es la mejor defensa de la democracia.</p>
+      <div class="toggle-container">
+        <span id="labelMontaje" class="label">MONTAJE</span>
+        <label class="switch"><input type="checkbox" id="modeToggle"><span class="slider"></span></label>
+        <span id="labelVerdad" class="label">VERDAD</span>
+      </div>
+    </header>
+    <main><section id="videos"></section></main>
+    <footer class="site-footer">
+      <hr>
+      <p>Proyecto creado por <a href="https://www.dentsucreative.cl" target="_blank" rel="noopener">dentsu Creative Chile</a> con el apoyo del Museo de la Memoria y los Derechos Humanos y TVN. Chile, 2025. Todos los derechos reservados.</p>
+    </footer>
+  </div>
+  <div id="lightbox"><div id="lightbox-content"><div id="lightbox-close">×</div><iframe id="lightbox-frame" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div></div>
+  <script>
+    const montageVideos = [
+      { id: 'G9pdmOcAQUo', title: 'Plan Z: la UP planea masacrar a 5 000 opositores | Plan Z | 1973', description: 'Prensa afín reproduce un dossier militar que atribuye al gobierno de Allende un autogolpe planificado para el 19-S, con listas de blancos y croquis de cuarteles tomados. El “hallazgo” justifica el golpe y la ola de detenciones.' },
+      { id: 'AIHxJUfYwAA', title: 'Exterminados como ratones: el MIR se depura con 119 muertos | Operación Colombo | 1975', description: 'La Segunda cita revistas argentinas y brasileñas—que nadie encuentra en kioscos—para afirmar que los desaparecidos murieron en pugnas internas fuera de Chile, descartando acción de organismos chilenos.' },
+      { id: 'Gz1Y9Ue6nBU', title: 'Chats de WhatsApp prueban red terrorista mapuche | Operación Huracán | 2017', description: 'Noticieros emiten capturas de pantalla que, según Carabineros, coordinan ataques incendiarios; se exhiben como evidencia irrefutable y se celebran ocho detenciones en horario prime.' },
+      { id: 'uNP9NVlxub0', title: 'Comunero armado cae en enfrentamiento con GOPE | Caso Catrillanca | 2018', description: 'Vocerías oficiales y noticieros afirman que Camilo Catrillanca participaba en el robo de vehículos, disparó primero y no hay registro audiovisual de la operación.' }
+    ];
+    const truthVideos = [
+      { id: 'CZ7NRQU5Um8', title: 'Sin evidencia real de un Plan Z; Junta no muestra pruebas | Plan Z | 1973', description: 'Los partes castrenses carecen de firmas, timbres y fecha; historiadores, partidos opositores y agencias externas no logran confirmar la existencia del plan ni de los supuestos autores intelectuales.' },
+      { id: '7CNh9N1LlPQ', title: 'Lista de 119 corresponde a detenidos por la DINA; revistas son falsas | Operación Colombo | 1975', description: 'Reporteros viajan a Buenos Aires y Río; comprobación hemerográfica muestra que Lea y O Novo Dia carecen de registro editorial. Familiares y la Iglesia entregan habeas corpus que ubican a los nombres en centros de detención chilenos.' },
+      { id: 'nySF8zfYzgU', title: 'Peritajes externos faltan; chats de Carabineros carecen de autenticidad | Operación Huracán | 2017', description: 'Especialistas en ciberforense piden los metadatos y claves hash para validar origen; Ministerio Público aún no verifica autenticidad ni integridad de los supuestos chats.' },
+      { id: '1-mqnQ2BGoA', title: 'Registro muestra a Catrillanca desarmado; disparos vienen de patrulla | Caso Catrillanca | 2018', description: 'Vecinos, estudiante acompañante y abogados revelan un tractor sin armas y confirman que los cascos policiales portan cámaras activas cuyo material no se libera; Fiscalía exige copia íntegra de los brutos.' }
+    ];
+    const container = document.getElementById('videos');
+    const toggle = document.getElementById('modeToggle');
+    const labelM = document.getElementById('labelMontaje');
+    const labelV = document.getElementById('labelVerdad');
+    const headerImg = document.getElementById('headerImg');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxFrame = document.getElementById('lightbox-frame');
+    const lightboxClose = document.getElementById('lightbox-close');
+    function openLightbox(id) { lightboxFrame.src = `https://www.youtube.com/embed/${id}?rel=0&autoplay=1`; lightbox.style.display='flex'; }
+    function closeLightbox() { lightbox.style.display='none'; lightboxFrame.src=''; }
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', e => { if(e.target===lightbox) closeLightbox(); });
+    function renderVideos(){
+      const isVerdad = toggle.checked;
+      headerImg.src = isVerdad? 'https://i.ibb.co/JWBjqk03/verdad1.png':'https://i.ibb.co/chVY2JCD/montaje1.png';
+      document.body.style.background = isVerdad? 'var(--color-verdad-bg)':'var(--color-bg)';
+      labelM.classList.toggle('active', !isVerdad);
+      labelV.classList.toggle('active', isVerdad);
+      container.innerHTML='';
+      (isVerdad?truthVideos:montageVideos).forEach(video=>{
+        const [mainTitle, caseName, year] = video.title.split(' | ');
+        const card = document.createElement('div'); card.className='video-card';
+        const thumb = document.createElement('div'); thumb.className='thumbnail';
+        const img = document.createElement('img'); img.src=`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
+        thumb.appendChild(img); thumb.onclick=()=>openLightbox(video.id);
+        const info = document.createElement('div'); info.className='video-info';
+        const h3 = document.createElement('h3'); h3.textContent=mainTitle; h3.style.color=!isVerdad?'var(--color-accent)':'inherit'; h3.onclick=()=>openLightbox(video.id);
+        const meta = document.createElement('div'); meta.className='meta'; meta.textContent=`Caso: ${caseName} - Año: ${year}`;
+        const p = document.createElement('p'); p.textContent=video.description;
+        const btn = document.createElement('button'); btn.className='view-btn '+(isVerdad?'verdad':'montaje'); btn.textContent=isVerdad?'VER VERDAD':'VER MONTAJE'; btn.onclick=()=>openLightbox(video.id);
+        info.append(h3, meta, p, btn); card.append(thumb, info); container.append(card);
+      });
+    }
+    toggle.addEventListener('change', renderVideos);
+    window.addEventListener('DOMContentLoaded', renderVideos);
+  </script>
+</body>
+</html>
