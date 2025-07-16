@@ -148,6 +148,8 @@
       display: block;
       margin: 0 !important;
       padding: 0 !important;
+      /* Agregar filtro blanco y negro */
+      filter: grayscale(100%);
     }
     .video-info {
       flex: 1;
@@ -360,7 +362,28 @@
         const [mainTitle, caseName, year] = video.title.split(' | ');
         const card = document.createElement('div'); card.className='video-card';
         const thumb = document.createElement('div'); thumb.className='thumbnail';
-        const img = document.createElement('img'); img.src=`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
+        // Cambiar thumbnail para Plan Z, Ratones, Huracán y Catrillanca
+        let thumbSrc;
+        if (!isVerdad && video.title.includes('Plan Z')) {
+          thumbSrc = 'img/planz-montaje.jpg';
+        } else if (isVerdad && video.title.includes('Plan Z')) {
+          thumbSrc = 'img/planz-verdad.jpg';
+        } else if (!isVerdad && video.title.includes('Operación Colombo')) {
+          thumbSrc = 'img/ratones-montaje.jpg';
+        } else if (isVerdad && video.title.includes('Operación Colombo')) {
+          thumbSrc = 'img/ratones-verdad.jpg';
+        } else if (!isVerdad && video.title.includes('Huracán')) {
+          thumbSrc = 'img/huracan-montaje.jpg';
+        } else if (isVerdad && video.title.includes('Huracán')) {
+          thumbSrc = 'img/huracan-verdad.jpg';
+        } else if (!isVerdad && video.title.includes('Catrillanca')) {
+          thumbSrc = 'img/catrillanca-montaje.jpg';
+        } else if (isVerdad && video.title.includes('Catrillanca')) {
+          thumbSrc = 'img/catrillanca-verdad.jpg';
+        } else {
+          thumbSrc = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
+        }
+        const img = document.createElement('img'); img.src = thumbSrc;
         thumb.appendChild(img); thumb.onclick=()=>openLightbox(video.id);
         const info = document.createElement('div'); info.className='video-info';
         const h3 = document.createElement('h3'); h3.textContent=mainTitle; h3.style.color=!isVerdad?'var(--color-accent)':'inherit'; h3.onclick=()=>openLightbox(video.id);
