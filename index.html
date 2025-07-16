@@ -98,25 +98,76 @@
       background-position: center;
       background-size: cover;
       background-repeat: no-repeat;
-      filter: grayscale(100%) blur(2px) opacity(0.2);
+      filter: grayscale(0%) sepia(1) hue-rotate(-20deg) saturate(4) brightness(0.7) opacity(0.25);
       z-index: -1;
+    }
+    body.verdad-mode #videos::before {
+      /* filtro original para modo Verdad */
+      filter: grayscale(100%) blur(2px) opacity(0.2);
+      background-image: url('https://i.ibb.co/8Dh7vBTg/ratones.jpg');
     }
     .video-card {
       background: #222;
       border-radius: 8px;
       display: flex;
       gap: 1rem;
-      align-items: flex-start;
-      padding: 1rem;
+      align-items: stretch;
+      padding: 0 1rem 0 0;
+      margin-bottom: 0;
+      /* El alto lo define el thumbnail */
+      height: 275px;
+      max-height: 275px;
+      overflow: hidden;
+      transition: max-height 0.3s, height 0.3s;
     }
-    .thumbnail { flex: 0 0 200px; cursor: pointer; }
-    .thumbnail img { width: 100%; border-radius: 4px; }
-    .video-info { flex: 1; display: flex; flex-direction: column; }
+    .video-card.expanded {
+      height: auto !important;
+      max-height: 1000vh !important;
+      overflow: visible;
+    }
+    .thumbnail {
+      flex: 0 0 312px;
+      width: 312px;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      cursor: pointer;
+      border-radius: 4px 0 0 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin: 0 !important;
+      padding: 0 !important;
+      align-self: stretch;
+    }
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      border-radius: 4px 0 0 4px;
+      object-fit: cover;
+      display: block;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .video-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      padding-left: 1rem;
+      overflow: hidden;
+      height: 100%;
+      max-height: 100%;
+    }
     .video-info h3 {
       margin: 0;
       font-size: 1.4rem;
       font-family: 'Special Gothic Condensed One', sans-serif;
       text-transform: uppercase;
+      /* restaurar estilos originales */
+      overflow: visible;
+      text-overflow: unset;
+      white-space: normal;
     }
     .video-info .meta {
       margin: 0.25rem 0 0.75rem;
@@ -124,6 +175,10 @@
       font-weight: bold;
       color: #fff;
       font-family: 'Chivo Mono', monospace;
+      /* restaurar estilos originales */
+      overflow: visible;
+      text-overflow: unset;
+      white-space: normal;
     }
     .video-info p {
       margin: 0 0 1rem;
@@ -131,6 +186,33 @@
       line-height: 1.4;
       color: #ccc;
       font-family: 'Chivo Mono', monospace;
+      /* Eliminar recorte y ver más */
+      display: block;
+      overflow: visible;
+      position: static;
+      max-height: unset;
+      -webkit-line-clamp: unset;
+      -webkit-box-orient: unset;
+      white-space: normal;
+      text-overflow: unset;
+      transition: none;
+    }
+    .video-info p.expanded {
+      -webkit-line-clamp: unset;
+      max-height: 100vh;
+      overflow: visible;
+    }
+    .see-more-btn {
+      background: none;
+      border: none;
+      color: var(--color-accent);
+      font-family: 'Chivo Mono', monospace;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 0;
+      margin: 0 0 1rem 0;
+      text-decoration: underline;
+      display: inline;
     }
     .view-btn {
       position: relative;
@@ -144,12 +226,11 @@
       transition: var(--transition);
       font-family: 'Special Gothic Condensed One', sans-serif;
       text-transform: uppercase;
+      /* restaurar estilos originales */
+      overflow: visible;
+      text-overflow: unset;
+      white-space: normal;
     }
-    .view-btn::before { content: "▶"; margin-right: 0.5rem; }
-    .view-btn.montaje { color: var(--color-accent); border-color: var(--color-accent); }
-    .view-btn.verdad  { color: #fff; border-color: #fff; }
-    .view-btn.montaje:hover, .view-btn.montaje:active { background: var(--color-accent); color: #fff; }
-    .view-btn.verdad:hover, .view-btn.verdad:active { background: #fff; color: #000; }
     /* Lightbox Styles */
     #lightbox {
       position: fixed;
@@ -177,12 +258,44 @@
     .site-footer a { color: var(--color-accent); text-decoration: none; font-weight: bold; }
     /* Responsive */
     @media (max-width: 600px) {
-      .video-card { flex-direction: column; align-items: center; }
-      .thumbnail { width: 100%; }
-      .video-info h3 { font-size: 1.2rem; text-align: center; }
-      .video-info .meta { text-align: center; }
-      .view-btn { margin: 0 auto; }
-      .toggle-container { flex-direction: row; gap: 1rem; }
+      .video-card {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        min-height: unset;
+        height: auto;
+        max-height: unset;
+        padding-left: 0;
+      }
+      .thumbnail {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        padding: 0 !important;
+        flex: unset;
+        align-self: unset;
+        display: block;
+      }
+      .thumbnail img {
+        height: auto;
+        border-radius: 4px;
+      }
+      .video-info {
+        padding: 0;
+        padding-left: 0;
+        height: auto;
+        max-height: unset;
+        overflow: visible;
+      }
+      .video-info h3,
+      .video-info .meta,
+      .video-info p,
+      .video-info .view-btn {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+      }
     }
   </style>
 </head>
@@ -203,7 +316,12 @@
       <p>Proyecto creado por <a href="https://www.dentsucreative.cl" target="_blank" rel="noopener">dentsu Creative Chile</a> con el apoyo del Museo de la Memoria y los Derechos Humanos y TVN. Chile, 2025. Todos los derechos reservados.</p>
     </footer>
   </div>
-  <div id="lightbox"><div id="lightbox-content"><div id="lightbox-close">×</div><iframe id="lightbox-frame" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div></div>
+  <div id="lightbox">
+    <div id="lightbox-content">
+      <div id="lightbox-close">×</div>
+      <iframe id="lightbox-frame" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+    </div>
+  </div>
   <script>
     const montageVideos = [
       { id: 'G9pdmOcAQUo', title: 'Plan Z: la UP planea masacrar a 5 000 opositores | Plan Z | 1973', description: 'Prensa afín reproduce un dossier militar que atribuye al gobierno de Allende un autogolpe planificado para el 19-S, con listas de blancos y croquis de cuarteles tomados. El “hallazgo” justifica el golpe y la ola de detenciones.' },
@@ -233,6 +351,8 @@
       const isVerdad = toggle.checked;
       headerImg.src = isVerdad? 'https://i.ibb.co/JWBjqk03/verdad1.png':'https://i.ibb.co/chVY2JCD/montaje1.png';
       document.body.style.background = isVerdad? 'var(--color-verdad-bg)':'var(--color-bg)';
+      document.body.classList.toggle('montaje-mode', !isVerdad);
+      document.body.classList.toggle('verdad-mode', isVerdad);
       labelM.classList.toggle('active', !isVerdad);
       labelV.classList.toggle('active', isVerdad);
       container.innerHTML='';
@@ -246,6 +366,24 @@
         const h3 = document.createElement('h3'); h3.textContent=mainTitle; h3.style.color=!isVerdad?'var(--color-accent)':'inherit'; h3.onclick=()=>openLightbox(video.id);
         const meta = document.createElement('div'); meta.className='meta'; meta.textContent=`Caso: ${caseName} - Año: ${year}`;
         const p = document.createElement('p'); p.textContent=video.description;
+        setTimeout(() => {
+          if (p.scrollHeight > p.clientHeight) {
+            const btn = document.createElement('button');
+            btn.className = 'see-more-btn';
+            btn.textContent = 'ver más';
+            btn.onclick = () => {
+              const isExpanded = card.classList.toggle('expanded');
+              if (isExpanded) {
+                p.classList.add('expanded');
+                btn.textContent = 'ver menos';
+              } else {
+                p.classList.remove('expanded');
+                btn.textContent = 'ver más';
+              }
+            };
+            p.after(btn);
+          }
+        }, 0);
         const btn = document.createElement('button'); btn.className='view-btn '+(isVerdad?'verdad':'montaje'); btn.textContent=isVerdad?'VER VERDAD':'VER MONTAJE'; btn.onclick=()=>openLightbox(video.id);
         info.append(h3, meta, p, btn); card.append(thumb, info); container.append(card);
       });
